@@ -25,6 +25,12 @@ endif(WIN32)
 
 IF (PYTHONINTERP_FOUND)
 
+  if(XCODE)
+    set(CMARK_LIBRARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../src/${CMAKE_BUILD_TYPE}")
+  else()
+    set(CMARK_LIBRARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../src")
+  endif()
+
   add_test(html_normalization
     ${PYTHON_EXECUTABLE} "-m" "doctest"
     "${CMAKE_CURRENT_SOURCE_DIR}/normalize.py"
@@ -33,41 +39,41 @@ IF (PYTHONINTERP_FOUND)
   if (CMARK_SHARED)
     add_test(spectest_library
       ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec"
-      "${CMAKE_CURRENT_SOURCE_DIR}/spec.txt" "--library-dir" "${CMAKE_CURRENT_BINARY_DIR}/../src"
+      "${CMAKE_CURRENT_SOURCE_DIR}/spec.txt" "--library-dir" "${CMARK_LIBRARY_DIR}"
       )
 
     add_test(pathological_tests_library
       ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/pathological_tests.py"
-      "--library-dir" "${CMAKE_CURRENT_BINARY_DIR}/../src"
+      "--library-dir" "${CMARK_LIBRARY_DIR}"
       )
 
     add_test(roundtriptest_library
       ${PYTHON_EXECUTABLE}
       "${CMAKE_CURRENT_SOURCE_DIR}/roundtrip_tests.py"
       "--spec" "${CMAKE_CURRENT_SOURCE_DIR}/spec.txt"
-      "--library-dir" "${CMAKE_CURRENT_BINARY_DIR}/../src"
+      "--library-dir" "${CMARK_LIBRARY_DIR}"
       )
 
     add_test(entity_library
       ${PYTHON_EXECUTABLE}
       "${CMAKE_CURRENT_SOURCE_DIR}/entity_tests.py"
-      "--library-dir" "${CMAKE_CURRENT_BINARY_DIR}/../src"
+      "--library-dir" "${CMARK_LIBRARY_DIR}"
       )
   endif()
 
   add_test(spectest_executable
-    ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec" "${CMAKE_CURRENT_SOURCE_DIR}/spec.txt" "--program" "${CMAKE_CURRENT_BINARY_DIR}/../src/cmark"
+    ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec" "${CMAKE_CURRENT_SOURCE_DIR}/spec.txt" "--program" "${CMARK_LIBRARY_DIR}/cmark"
     )
 
   add_test(smartpuncttest_executable
-    ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec" "${CMAKE_CURRENT_SOURCE_DIR}/smart_punct.txt" "--program" "${CMAKE_CURRENT_BINARY_DIR}/../src/cmark --smart"
+    ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec" "${CMAKE_CURRENT_SOURCE_DIR}/smart_punct.txt" "--program" "${CMARK_LIBRARY_DIR}/cmark --smart"
     )
 
   add_test(regressiontest_executable
     ${PYTHON_EXECUTABLE}
     "${CMAKE_CURRENT_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec"
     "${CMAKE_CURRENT_SOURCE_DIR}/regression.txt" "--program"
-    "${CMAKE_CURRENT_BINARY_DIR}/../src/cmark"
+    "${CMARK_LIBRARY_DIR}/cmark"
     )
 
 ELSE(PYTHONINTERP_FOUND)
